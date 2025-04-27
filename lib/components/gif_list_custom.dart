@@ -19,7 +19,7 @@ Widget gifListCustom(
     ),
     itemCount: getCount(snapshot.data["data"]),
     itemBuilder: (context, index) {
-      if (search == null || index < snapshot.data["data"].length) {
+      if (search!.isEmpty || index < snapshot.data["data"].length) {
         return GestureDetector(
           child: FadeInImage.memoryNetwork(
             placeholder: kTransparentImage,

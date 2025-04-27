@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String _key = "";
 
-  String? _search;
+  String? _search = "";
   int _offset = 0;
 
   @override
@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
   Future<Map> _getGifs() async {
     http.Response response;
 
-    if (_search == null || _search!.isEmpty) {
+    if (_search!.isEmpty) {
       response = await http.get(
         Uri.parse(
           "https://api.giphy.com/v1/gifs/trending?api_key=$_key&limit=20&offset=20&rating=g&bundle=messaging_non_clips",
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   int _getCount(List data) {
-    if (_search == null) {
+    if (_search!.isEmpty) {
       return data.length;
     } else {
       return data.length + 1;
