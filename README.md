@@ -4,7 +4,7 @@ Construindo um buscador de gifs
 
 <div align="center">
 
-
+![Flutter_app5](https://github.com/user-attachments/assets/bc21b657-d66c-48b6-9347-689883bc4b20)
 
 </div>
 
@@ -12,7 +12,14 @@ Construindo um buscador de gifs
 Projeto com o objetivo de aprofundar os conhecimentos na estrutura de consumo de APIs externas.
 
 ### Conceitos aprendidos 
+- GridView
+- GestureDetector (onTap |  onLongPress)
+- Navigator
+- Share
 
+### Conceitos reforçados
+- Future | FutureBuilder
+- Http Reponse/Get
 
 ### Rodar o projeto 
 1. **SDK do Flutter:**
@@ -20,7 +27,7 @@ Projeto com o objetivo de aprofundar os conhecimentos na estrutura de consumo de
 
 2. **Variáveis de Ambiente:**
     - Crie a pasta `assets` na raiz do projeto e adicione o arquivo `.env`.
-    - Dentro do arquivo `.env`, declare a variável `API_URL_KEY` com a URL da sua API de moedas. Você pode encontrá-la e gerá-la em: [https://developers.giphy.com/](https://developers.giphy.com/).
+    - Dentro do arquivo `.env`, declare a variável `API_KEY` com a Chave da sua API de Gifs. Você pode encontrá-la e gerá-la em: [https://developers.giphy.com/](https://developers.giphy.com/).
 
    <br>
 
