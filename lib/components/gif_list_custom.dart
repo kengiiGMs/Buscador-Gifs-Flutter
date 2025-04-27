@@ -31,7 +31,9 @@ Widget gifListCustom(
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => GifPage()),
+              MaterialPageRoute(
+                builder: (context) => GifPage(snapshot.data["data"][index]),
+              ),
             );
           },
           onLongPress: () {

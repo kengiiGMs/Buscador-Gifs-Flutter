@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
     if (_search == null) {
       response = await http.get(
         Uri.parse(
-          "https://api.giphy.com/v1/gifs/trending?api_key=$_key&limit=20&offset=$_offset&rating=g&bundle=messaging_non_clips",
+          "https://api.giphy.com/v1/gifs/trending?api_key=$_key&limit=20&offset=20&rating=g&bundle=messaging_non_clips",
         ),
       );
     } else {
