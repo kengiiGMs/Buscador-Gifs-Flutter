@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   transparent_image: ^2.0.1
   flutter_dotenv: ^5.0.2
+  http: ^0.13.6
+  share_plus: ^10.1.4
 
 dev_dependencies:
   flutter_test:

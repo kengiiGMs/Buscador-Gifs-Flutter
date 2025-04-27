@@ -1,7 +1,8 @@
-import 'package:buscador_gifs/ui/gif_page.dart';
+import 'dart:convert';
+import 'package:buscador_gifs/components/gif_list_custom.dart';
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import "package:http/http.dart" as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,9 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String key = "";
-  String defaultURL = "";
-  String specificURL = "";
+  String _key = "";
 
   String? _search;
   int _offset = 0;
@@ -21,25 +20,51 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    getFileEnv();
+    _init();
+  }
+
+  Future<void> _init() async {
+    await getFileEnv();
+    await _getGifs();
   }
 
   Future<void> getFileEnv() async {
-    await dotenv.load(fileName: ".env");
+    await dotenv.load(fileName: "assets/.env");
     setState(() {
-      key = dotenv.env['API_KEY'] ?? "";
+      _key = dotenv.env['API_KEY'] ?? "";
     });
-    setUrls();
   }
 
-  setUrls() {
+  Future<Map> _getGifs() async {
+    http.Response response;
+
+    if (_search == null) {
+      response = await http.get(
+        Uri.parse(
+          "https://api.giphy.com/v1/gifs/trending?api_key=$_key&limit=20&offset=$_offset&rating=g&bundle=messaging_non_clips",
+        ),
+      );
+    } else {
+      response = await http.get(
+        Uri.parse(
+          "https://api.giphy.com/v1/gifs/search?api_key=$_key&q=$_search&limit=19&offset=$_offset&rating=g&lang=en&bundle=messaging_non_clips",
+        ),
+      );
+    }
+    return jsonDecode(response.body);
+  }
+
+  int _getCount(List data) {
+    if (_search == null) {
+      return data.length;
+    } else {
+      return data.length + 1;
+    }
+  }
+
+  void _loadMore() {
     setState(() {
-      if (key != "") {
-        defaultURL =
-            "https://api.giphy.com/v1/gifs/trending?api_key=$key&limit=20&offset=20&rating=g&bundle=messaging_non_clips";
-        specificURL =
-            "https://api.giphy.com/v1/gifs/search?api_key=$key&q=$_search&limit=19&offset=$_offset&rating=g&lang=en&bundle=messaging_non_clips";
-      }
+      _offset += 19;
     });
   }
 
@@ -64,65 +89,44 @@ class _HomePageState extends State<HomePage> {
               ),
               style: TextStyle(color: Colors.white, fontSize: 18.0),
               textAlign: TextAlign.center,
+              onSubmitted: (text) {
+                setState(() {
+                  _search = text;
+                  _offset = 0;
+                });
+              },
             ),
           ),
           Expanded(
-            child: GridView(
-              padding: EdgeInsets.all(10.0),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-              ),
-              children: [
-                GestureDetector(
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image:
-                        "https://media.giphy.com/media/OYbeDEzHWFU28nLOJC/giphy.gif",
-                    height: 300.0,
-                    fit: BoxFit.cover,
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => GifPage()),
+            child: FutureBuilder(
+              future: _getGifs(),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                  case ConnectionState.none:
+                    return Container(
+                      width: 200.0,
+                      height: 200.0,
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        strokeWidth: 5.0,
+                      ),
                     );
-                  },
-                ),
-                GestureDetector(
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image:
-                        "https://media.giphy.com/media/OYbeDEzHWFU28nLOJC/giphy.gif",
-                    height: 300.0,
-                    fit: BoxFit.cover,
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => GifPage()),
-                    );
-                  },
-                ),
-                GestureDetector(
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image:
-                        "https://media.giphy.com/media/OYbeDEzHWFU28nLOJC/giphy.gif",
-                    height: 300.0,
-                    fit: BoxFit.cover,
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => GifPage()),
-                    );
-                  },
-                ),
-                Text(defaultURL),
-                Text(specificURL),
-              ],
+                  default:
+                    if (snapshot.hasError) {
+                      return Container();
+                    } else {
+                      return gifListCustom(
+                        context,
+                        snapshot,
+                        _getCount,
+                        _search,
+                        _loadMore,
+                      );
+                    }
+                }
+              },
             ),
           ),
         ],
